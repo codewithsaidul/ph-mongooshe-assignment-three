@@ -13,7 +13,39 @@ export const addBook = async (req: Request, res: Response) => {
       data: book,
     });
   } catch (error: any) {
-    // 1. Mongoose Validation Error
+    // =============== Handle Duplicate ISBN Error Message ==================
+    // It extracts detailed error info for isbn uniqueness to send a structured response
+    if (error.code === 11000 && error.keyValue) {
+      const key = Object.keys(error.keyValue)[0];
+      const value = error.keyValue[key];
+
+
+      const errors = {
+        name: "ValidationError",
+        errors: {
+          [key]: {
+            message: `${key} '${value}' already exists.`,
+            name: "ValidatorError",
+            properties: {
+              message: `${key} must be unique`,
+              type: "unique",
+            },
+            kind: "unique",
+            path: key,
+            value: value,
+          },
+        },
+      };
+
+      return res.status(400).json({
+        message: "Validation Failed",
+        success: false,
+        error: errors,
+      });
+    }
+
+    // =============== Handle Validation Error Message ==================
+    // It extracts detailed error info for each invalid field to send a structured response
     if (error.name === "ValidationError") {
       const errors: Record<string, any> = {};
 
@@ -21,24 +53,29 @@ export const addBook = async (req: Request, res: Response) => {
         const err = error.errors[key];
         errors[key] = {
           message: err.message,
-          name: err.name, // ValidatorError ইত্যাদি
-          properties: err.properties || {},
+          name: err.name,
+          properties: {
+            message: err.properties.message,
+            type: err.properties.type,
+            min: err.properties.min
+          },
           kind: err.kind || null,
           path: err.path || key,
           value: err.value || null,
         };
       }
 
-        res.status(400).json({
+      return res.status(400).json({
+        message: "Validation Failed",
         success: false,
-        message: "Validation failed",
         error: {
           name: "ValidationError",
-          errors: errors,
+          errors: errors
         },
       });
     }
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       message: "Something went wrong",
       error: error.message || error,
