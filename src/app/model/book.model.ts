@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IBook } from "../interface/book.interface";
 
+
 const bookSchema = new Schema<IBook>({
   title: { type: String, required: [true, "title is required"] },
   author: { type: String, required: [true, "author is required"] },
@@ -20,8 +21,14 @@ const bookSchema = new Schema<IBook>({
     },
     
   },
+  isbn: {
+    type: String,
+    unique: [true, "Duplicate ISBN number"]
+  },
   description: String,
-  copies: [Number, "book copies are required"],
+  copies: {
+    type: Number
+  },
   available: {
     type: Boolean,
     default: true
