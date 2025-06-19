@@ -1,0 +1,20 @@
+{
+  "name": "ph-mongooshe-assignment-three",
+  "version": "1.0.0",
+  "description": "This is my assignment three while i learning backend on programming hero level-2",
+  "main": "server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
+  },
+  "author": "codewithsaidul",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoosh": "^0.0.7",
+    "zod": "^3.25.67"
+  }
+}
