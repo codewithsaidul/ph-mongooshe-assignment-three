@@ -111,7 +111,7 @@ export const getSinlgeBook = async (req: Request, res: Response) => {
 
 
 
-// ================= get single book by id
+// ================= update book by id
 export const updateBookById = async (req: Request, res: Response) => {
   const { bookId }  = req.params;
   const bookBody = req.body
@@ -122,6 +122,21 @@ export const updateBookById = async (req: Request, res: Response) => {
     success: true,
     message: "Book updated successfully",
     data: book,
+  });
+};
+
+
+
+// ================= delete book by id
+export const deleteBookById = async (req: Request, res: Response) => {
+  const { bookId }  = req.params;
+
+  await Book.findByIdAndDelete(bookId);
+
+  res.status(200).json({
+    success: true,
+    message: "Book updated successfully",
+    data: null,
   });
 };
 
