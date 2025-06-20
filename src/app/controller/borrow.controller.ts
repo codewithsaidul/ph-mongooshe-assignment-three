@@ -4,7 +4,8 @@ import Borrow from "../model/borrow.model";
 // ================= add new book
 export const borrowBook = async (
   req: Request,
-  res: Response
+  res: Response,
+  next: Function
 ) => {
   try {
     const { bookId, quantity, dueDate } = req.body;
@@ -18,11 +19,6 @@ export const borrowBook = async (
       .status(200)
       .json({ message: "Book borrowed successfully", borrowBook });
   } catch (error: any) {
-    res
-      .status(400)
-      .json({
-        success: false,
-        message: error.message
-      });
+    next(error)
   }
 };

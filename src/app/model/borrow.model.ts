@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import { BorrowStaticMethod, IBorrow } from "../interface/borrow.interface";
 import { Model } from "mongoose";
 import Book from "./book.model";
+import { APiError } from "../utils/APIError";
 
 const borrowSchema = new Schema<IBorrow, Model<IBorrow>, BorrowStaticMethod>(
   {
@@ -39,14 +40,65 @@ borrowSchema.method(
   async function (bookId: string, quantity: number) {
     const book = await Book.findById(bookId);
 
+    if (!book) {
+      throw new APiError(400, "Resource not found", {
+        name: "NotFoundError",
+        errors: {
+          book: {
+            message: "Book Not Found",
+            name: "custom error",
+            properties: {
+              message: "Book Not Found",
+              type: "Book",
+            },
+            kind: "Book",
+            path: "BookId",
+            value: bookId,
+          },
+        },
+      });
+    }
+
     //   checking book available status
     if (!book?.available) {
-      throw new Error("This Book isn't available at this moment");
+      // throw new Error("This Book isn't available at this moment");
+      throw new APiError(400, "Book is currently unavailable", {
+        name: "UnavailableError",
+        errors: {
+          book: {
+            message: "This Book isn't available at this moment",
+            name: "custom error",
+            properties: {
+              message: "This Book isn't available at this moment",
+              type: "Book Availity",
+            },
+            kind: "Book Availity",
+            path: "BookId",
+            value: bookId,
+          },
+        },
+      });
     }
 
     //   checking enough copies are available or not
     if (book?.copies === undefined || book?.copies < quantity) {
-      throw new Error("Not enough copies available");
+      // throw new Error("Not enough copies available");
+      throw new APiError(400, "Validation failed", {
+        name: "BusinessLogicError",
+        errors: {
+          copies: {
+            message: "Not enough copies available",
+            name: "CustomError",
+            properties: {
+              message: "Not enough copies available",
+              type: "copies",
+            },
+            kind: "BusinessLogic",
+            path: "BookId",
+            value: quantity,
+          },
+        },
+      });
     }
 
     book.copies -= quantity;
