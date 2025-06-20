@@ -93,3 +93,23 @@ export const getBooks = async (req: Request, res: Response) => {
     data: books,
   });
 };
+
+
+
+// ================= get single book by id
+export const getSinlgeBook = async (req: Request, res: Response) => {
+  const { bookId }  = req.params
+
+  const book = await Book.findById(bookId);
+
+  res.status(200).json({
+    success: true,
+    message: "Book retrieved successfully",
+    data: book,
+  });
+};
+
+
+
+
+
