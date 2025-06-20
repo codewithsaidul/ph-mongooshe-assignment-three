@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Book from "../model/book.model";
 
+// ================= add new book
 export const addBook = async (req: Request, res: Response) => {
   try {
     const bookBody = req.body;
@@ -19,7 +20,6 @@ export const addBook = async (req: Request, res: Response) => {
       const key = Object.keys(error.keyValue)[0];
       const value = error.keyValue[key];
 
-
       const errors = {
         name: "ValidationError",
         errors: {
@@ -37,7 +37,7 @@ export const addBook = async (req: Request, res: Response) => {
         },
       };
 
-      return res.status(400).json({
+      res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: errors,
@@ -57,7 +57,7 @@ export const addBook = async (req: Request, res: Response) => {
           properties: {
             message: err.properties.message,
             type: err.properties.type,
-            min: err.properties.min
+            min: err.properties.min,
           },
           kind: err.kind || null,
           path: err.path || key,
@@ -65,23 +65,31 @@ export const addBook = async (req: Request, res: Response) => {
         };
       }
 
-      return res.status(400).json({
+      res.status(400).json({
         message: "Validation Failed",
         success: false,
         error: {
           name: "ValidationError",
-          errors: errors
+          errors: errors,
         },
       });
     }
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Something went wrong",
       error: error.message || error,
     });
   }
 };
+
+// ================= get all books
 export const getBooks = async (req: Request, res: Response) => {
-  console.log("Hello");
+  const books = await Book.find();
+
+  res.status(200).json({
+    success: true,
+    message: "Books retrieved successfully",
+    data: books,
+  });
 };
