@@ -21,7 +21,20 @@ export const addBook = async (req: Request, res: Response, next: Function) => {
 // ================= get all books
 export const getBooks = async (req: Request, res: Response, next: Function) => {
   try {
-    const books = await Book.find();
+
+    const { filter = "none", sortBy = "createdAt", sort = "desc", limit = 1} = req.query
+
+    const query: Record<string, any> = {};
+
+    // filter by genre
+    if (filter !== "none") {
+      query.genre = filter
+    }
+
+
+
+
+    const books = await Book.find(query).sort({ [ sortBy as string ]: sort === "asc" ? 1 : -1 }).limit(parseInt(limit as string));
 
     res.status(200).json({
       success: true,
@@ -89,7 +102,7 @@ export const deleteBookById = async (
 
     res.status(200).json({
       success: true,
-      message: "Book updated successfully",
+      message: "Book deleted successfully",
       data: null,
     });
   } catch (error: any) {
