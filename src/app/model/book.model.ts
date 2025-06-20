@@ -28,8 +28,8 @@ const bookSchema = new Schema<IBook>(
     description: String,
     copies: {
       type: Number,
-      required: [true, "Book copies are required"],
-      min: [1, "Book copies must be a positive number"],
+      required: [true, "Copies are required"],
+      min: [1, "Copies must be a positive number"],
       validate: {
         validator: Number.isInteger,
         message: "Copies must be a number",

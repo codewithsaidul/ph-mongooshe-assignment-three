@@ -22,7 +22,7 @@ export const addBook = async (req: Request, res: Response, next: Function) => {
 export const getBooks = async (req: Request, res: Response, next: Function) => {
   try {
 
-    const { filter = "none", sortBy = "createdAt", sort = "desc", limit = 1} = req.query
+    const { filter = "none", sortBy = "createdAt", sort = "desc", limit = 10} = req.query
 
     const query: Record<string, any> = {};
 

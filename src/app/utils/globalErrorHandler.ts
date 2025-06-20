@@ -7,8 +7,6 @@ export const globalErrorHandler = (
   res: Response,
   next: Function
 ) => {
-  // =============== Handle Duplicate ISBN Error Message ==================
-  // It extracts detailed error info for isbn uniqueness to send a structured response
   if (err.code === 11000 && err.keyValue) {
     const key = Object.keys(err.keyValue)[0];
     const value = err.keyValue[key];
@@ -37,10 +35,7 @@ export const globalErrorHandler = (
     });
 
     return;
-  }
-
-  // Mongoose Validation Error
-  if (err.name === "ValidationError") {
+  } else if (err.name === "ValidationError") {
     res.status(404).json({
       message: "Validation failed",
       success: false,
@@ -51,22 +46,19 @@ export const globalErrorHandler = (
     });
 
     return;
-  }
-
-  // ✅ Any other custom ApiError (e.g., business rule)
-  if (err instanceof APiError) {
+  } else if (err instanceof APiError) {
     res.status(err.statusCode || 404).json({
       message: err.message,
       success: false,
       error: err.error || {},
     });
     return;
+  } else {
+    // Unexpected error
+    res.status(404).json({
+      message: "Internal Server Error",
+      success: false,
+      error: err.message || err,
+    });
   }
-
-  // Unexpected error
-  res.status(404).json({
-    message: "Internal Server Error",
-    success: false,
-    error: err.message || err,
-  });
 };
