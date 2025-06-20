@@ -41,7 +41,7 @@ borrowSchema.method(
     const book = await Book.findById(bookId);
 
     if (!book) {
-      throw new APiError(400, "Resource not found", {
+      throw new APiError(404, "Resource not found", {
         name: "NotFoundError",
         errors: {
           book: {
@@ -62,7 +62,7 @@ borrowSchema.method(
     //   checking book available status
     if (!book?.available) {
       // throw new Error("This Book isn't available at this moment");
-      throw new APiError(400, "Book is currently unavailable", {
+      throw new APiError(404, "Book is currently unavailable", {
         name: "UnavailableError",
         errors: {
           book: {
@@ -83,7 +83,7 @@ borrowSchema.method(
     //   checking enough copies are available or not
     if (book?.copies === undefined || book?.copies < quantity) {
       // throw new Error("Not enough copies available");
-      throw new APiError(400, "Validation failed", {
+      throw new APiError(404, "Validation failed", {
         name: "BusinessLogicError",
         errors: {
           copies: {

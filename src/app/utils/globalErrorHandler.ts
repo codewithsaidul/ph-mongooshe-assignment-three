@@ -30,7 +30,7 @@ export const globalErrorHandler = (
       },
     };
 
-    res.status(400).json({
+    res.status(404).json({
       message: "Validation Failed",
       success: false,
       error: errors,
@@ -41,7 +41,7 @@ export const globalErrorHandler = (
 
   // Mongoose Validation Error
   if (err.name === "ValidationError") {
-    res.status(400).json({
+    res.status(404).json({
       message: "Validation failed",
       success: false,
       error: {
@@ -55,7 +55,7 @@ export const globalErrorHandler = (
 
   // ✅ Any other custom ApiError (e.g., business rule)
   if (err instanceof APiError) {
-    res.status(err.statusCode || 400).json({
+    res.status(err.statusCode || 404).json({
       message: err.message,
       success: false,
       error: err.error || {},
@@ -64,7 +64,7 @@ export const globalErrorHandler = (
   }
 
   // Unexpected error
-  res.status(400).json({
+  res.status(404).json({
     message: "Internal Server Error",
     success: false,
     error: err.message || err,
