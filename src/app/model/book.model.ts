@@ -46,6 +46,11 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
+
+bookSchema.method("updateAvailability", function () {
+  this.available = this.copies > 0;
+})
+
 const Book = model("Book", bookSchema);
 
 export default Book;
