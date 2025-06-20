@@ -111,5 +111,21 @@ export const getSinlgeBook = async (req: Request, res: Response) => {
 
 
 
+// ================= get single book by id
+export const updateBookById = async (req: Request, res: Response) => {
+  const { bookId }  = req.params;
+  const bookBody = req.body
+
+  const book = await Book.findByIdAndUpdate(bookId, bookBody);
+
+  res.status(200).json({
+    success: true,
+    message: "Book updated successfully",
+    data: book,
+  });
+};
+
+
+
 
 
