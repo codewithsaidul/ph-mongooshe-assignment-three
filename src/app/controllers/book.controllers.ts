@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Book from "../model/book.model";
+import Book from "../models/book.model";
 
 // ================= add new book
 export const addBook = async (req: Request, res: Response, next: Function) => {
@@ -21,20 +21,23 @@ export const addBook = async (req: Request, res: Response, next: Function) => {
 // ================= get all books
 export const getBooks = async (req: Request, res: Response, next: Function) => {
   try {
-
-    const { filter = "none", sortBy = "createdAt", sort = "desc", limit = 10} = req.query
+    const {
+      filter = "none",
+      sortBy = "createdAt",
+      sort = "desc",
+      limit = 10,
+    } = req.query;
 
     const query: Record<string, any> = {};
 
     // filter by genre
     if (filter !== "none") {
-      query.genre = filter
+      query.genre = filter;
     }
 
-
-
-
-    const books = await Book.find(query).sort({ [ sortBy as string ]: sort === "asc" ? 1 : -1 }).limit(parseInt(limit as string));
+    const books = await Book.find(query)
+      .sort({ [sortBy as string]: sort === "asc" ? 1 : -1 })
+      .limit(parseInt(limit as string));
 
     res.status(200).json({
       success: true,
