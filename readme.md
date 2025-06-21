@@ -6,34 +6,22 @@ A RESTful API for managing a library system built using Express.js, TypeScript, 
 
 ###### 🌐 API Base Url [(https://library-management-api-beta.vercel.app)](https://library-management-api-beta.vercel.app)
 
-###### 📹Video Explanation [watch on youtube](https://youtu.be/K-7yB5dnMyQ?si=tu5lphvDDuy3y5to)
+###### 📹Video Explanation [watch on youtube](https://youtu.be/r8aum5dBrsY?si=G4Mb6OYNZXHZm-gW)
 
-##
-
-##
-
-##
+<br> </br>
 
 ## 🧩 Feature
 
-#
+    ✅ Create, Read, Update, Delete(CRUD) for books
+    🔎 Filter & Sort by Genre & date(default)
+    📦 Borrow System with availability check
+    📊  Aggregatted Borrow Summary(MongoDb Aggregation)
+    🧠 Mongoose Middleware, and instance method used
+    🔒 Schema Validationwith custom error message
 
-    - ✅ Create, Read, Update, Delete(CRUD) for books
-    - 🔎 Filter & Sort by Genre & date(default)
-    - 📦 Borrow System with availability check
-    - 📊  Aggregatted Borrow Summary(MongoDb Aggregation)
-    - 🧠 Mongoose Middleware, and instance method used
-    - 🔒 Schema Validationwith custom error message
-
-##
-
-##
-
-##
+<br> </br>
 
 ## ⚙️ Technologies Used
-
-##
 
     - Node.JS
     - Express.JS
@@ -42,15 +30,9 @@ A RESTful API for managing a library system built using Express.js, TypeScript, 
     - Vercel for deployment
     - Postman for api testing
 
-##
-
-##
-
-##
+<br> </br>
 
 ## 🏗️ Project Structure
-
-##
 
 ```
 📁 src
@@ -63,31 +45,20 @@ A RESTful API for managing a library system built using Express.js, TypeScript, 
 
 ```
 
-##
-
-##
-
-##
+<br> </br>
 
 ## Getting Started
 
 #### ✅ Prerequisites
 
-##
 
     - Node.js >= 18
     - npm or yarn
     - MongoDB Atlas or Local MongoDB Instance
 
-##
-
-##
-
-##
+<br> </br>
 
 ## 📦 Installation
-
-##
 
 ```
  git clone https://github.com/codewithsaidul/ph-mongooshe-assignment-three.git
@@ -98,11 +69,7 @@ A RESTful API for managing a library system built using Express.js, TypeScript, 
 
 ```
 
-##
-
-##
-
-##
+<br> </br>
 
 ## ⚙️ Environment Variables
 
@@ -112,15 +79,10 @@ create .env file on root on your folder:
 MONGODB_URI = mongodb+srv://<username>:<password>@cluster.mongodb.net/library
 ```
 
-##
-
-##
-
-##
+<br> </br>
 
 ## 🛠️ Run Locally
 
-##
 
 ```
 
@@ -135,76 +97,68 @@ npm run build
 
 ```
 
-##
-
-##
-
-##
+<br> </br>
 
 ## 🛣️ API End Points
 
 The Library Management API exposes the following endpoints:
 
-##
+<br> </br>
 
 #### 📚 Books
 
-##
+<br> </br>
 
 ###### post `/api/books`:
 
 this endpoint is used to create a new book. It accepts fields like `title`, `author`, `genre`, `isbn`, `copies`, and `available(optional)`. The `genre` must be one of the allowed categories like `FICTION`, `SCIENCE`, etc.
 
-##
+<br> </br>
 
 ###### get `/api/books`:
 
 this endpoint retrieves all book. This route supports filtering by `genre` using the `filter` query parameter, sorting results by a field (e.g createdAt) using `sortBy`. Changing the sort direction using `sort`(asc or desc), and limiting the number of results using the `limit` parameter.
 
-##
+<br> </br>
 
 ###### get `/api/books:bookId`:
 
 this endpoint fetchs a single book by its unique MongoDB ObjectID. It returns all details of the book including metadata like `createdAt` and `updatedAt`.
 
-##
+<br> </br>
 
 ###### put `/api/books:bookId`:
 
 this endpoint updates an existing book. you can send partial update like (only changing the `copies`), and the correspending fields will be updated in the database.
 
-##
+<br> </br>
 
 ###### delete `/api/books:bookId`:
 
 this endpoint permently removes a book from the system based on its ID.
 
-##
+<br> </br>
 
 #### 📚 Borrow Books
 
-##
+<br> </br>
 
 ###### post `/api/borrow`:
 
 this endpoint is used to borrow a book. Its accepts three fields in the requested body. The `book`: id of the book, `quantity`: number of `copies` to borrow, and the `dueDate`: return the deadline.
 Before processing the request, the system verifies whether enough copies are available. If the rquested quantity is avaiable, it deducts the quantity from the total copies, Additionally, if the remaining number of copies becomes zero, the system automatically sets the book's `available` status to `false`.
 
-##
+<br> </br>
 
 ###### get `/api/borrow`:
 
 this enpoints provides an aggregatted summary to all borrowed books. It uses MongoDB's aggregation pipeline to return the total quantity borrowed per book along with the book's title and isbn.
 
-##
-
-##
-
-##
+<br> </br>
 
 ## 🧪 Sample Request Payloads
 
-##
+<br>
 
 #### ✅ Create Book
 
@@ -222,8 +176,7 @@ this enpoints provides an aggregatted summary to all borrowed books. It uses Mon
 
 ```
 
-##
-##
+<br> </br>
 
 #### ✅ Borrow Book
 
@@ -235,22 +188,17 @@ this enpoints provides an aggregatted summary to all borrowed books. It uses Mon
 }
 
 ```
-
-##
-##
-##
+<br> </br>
 
 ## 🧠 Business Logic
-##
+
     - ✅ Prevent borrowing more available copies using Mongoose Instance Method
     - ✅ Set Book's `available=false` if copies = 0
     - ✅ `Borrow Summary` uses MongoDB Aggregation Pipeline
     - ✅ Custom Error Handler for Validation & Other Errors
 
 
-##
-##
-##
+<br> </br>
 
 ## ⚠️ Error Response Formate
 
@@ -277,28 +225,24 @@ this enpoints provides an aggregatted summary to all borrowed books. It uses Mon
   }
 }
 ```
-
-##
-##
-##
+<br> </br>
 
 ### ✅ Bonus Highlights
-###
-    - ✅ Follows RESTful principles
 
-    - ✅ Clean, modular code with comments
+    ✅ Follows RESTful principles
 
-    - ✅ Well-structured folder design
+    ✅ Clean, modular code with comments
 
-    - ✅ Strong TypeScript usage for type safety
+    ✅ Well-structured folder design
 
-    - ✅ Industry-standard error handling and response format
+    ✅ Strong TypeScript usage for type safety
+
+    ✅ Industry-standard error handling and response format
   
-##
-##
-##
+<br> </br>
 
 ## 🧑‍💻 Author
 ##### SAIDUL ISLAM RANA
 Frontend Dev | Backend Learner | MERN Stack Enthusiast
+<br>
 GitHub: @codewithsaidul

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Book from "../models/book.model";
+import { APiError } from "../utils/APIError";
 
 // ================= add new book
 export const addBook = async (req: Request, res: Response, next: Function) => {
@@ -60,6 +61,25 @@ export const getSinlgeBook = async (
 
     const book = await Book.findById(bookId);
 
+    if (!book) {
+      throw new APiError(404, "Resource not found", {
+        name: "NotFoundError",
+        errors: {
+          book: {
+            message: "Book Not Found",
+            name: "custom error",
+            properties: {
+              message: "Book Not Found",
+              type: "Book",
+            },
+            kind: "Book",
+            path: "BookId",
+            value: bookId,
+          },
+        },
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "Book retrieved successfully",
@@ -73,7 +93,7 @@ export const getSinlgeBook = async (
 // ================= update book by id
 export const updateBookById = async (
   req: Request,
-  res: Response,
+res: Response,
   next: Function
 ) => {
   try {

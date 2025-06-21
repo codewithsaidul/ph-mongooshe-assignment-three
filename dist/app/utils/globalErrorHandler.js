@@ -48,6 +48,30 @@ const globalErrorHandler = (err, req, res, next) => {
         });
         return;
     }
+    else if (err.name === "CastError") {
+        const errors = {
+            name: "NotFoundError",
+            errors: {
+                book: {
+                    message: `Book Not Found`,
+                    name: "Custom Error",
+                    properties: {
+                        message: "Book Not Found",
+                        type: "Book",
+                    },
+                    kind: err.kind || null,
+                    path: err.path || null,
+                    value: err.value || null
+                },
+            },
+        };
+        res.status(404).json({
+            message: "Resource not found",
+            success: false,
+            error: errors,
+        });
+        return;
+    }
     else {
         // Unexpected error
         res.status(404).json({
