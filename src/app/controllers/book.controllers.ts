@@ -121,7 +121,7 @@ export const deleteBookById = async (
   try {
     const { bookId } = req.params;
 
-    await Book.findByIdAndDelete(bookId);
+    await Book.findOneAndDelete({ _id: bookId});
 
     res.status(200).json({
       success: true,

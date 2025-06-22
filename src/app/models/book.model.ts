@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { IBook } from "../interface/book.interface";
+import { APiError } from "../utils/APIError";
 
 const bookSchema = new Schema<IBook>(
   {
@@ -46,10 +47,31 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
-
-bookSchema.method("updateAvailability", function () {
-  this.available = this.copies > 0;
-})
+bookSchema.pre("findOneAndDelete", async function (next) {
+  const bookId = this.getFilter();
+  const key = Object.keys(bookId)[0];
+  const book = await this.clone().findOne();
+  if (!book) {
+    throw new APiError(404, "Resource not found", {
+      name: "NotFoundError",
+      errors: {
+        book: {
+          message: "Book Not Found",
+          name: "custom error",
+          properties: {
+            message: "Book Not Found",
+            type: "delete book",
+            location: "params"
+          },
+          kind: "Book",
+          path: key,
+          value: bookId._id
+        },
+      },
+    });
+  }
+  next();
+});
 
 const Book = model("Book", bookSchema);
 
