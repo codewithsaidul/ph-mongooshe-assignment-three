@@ -40,6 +40,7 @@ borrowSchema.method(
   async function (bookId: string, quantity: number) {
     const book = await Book.findById(bookId);
 
+    // checking requested bokk exist or not
     if (!book) {
       throw new APiError(404, "Resource not found", {
         name: "ResourceNotFoundError",
@@ -67,10 +68,10 @@ borrowSchema.method(
         name: "UnavailableError",
         errors: {
           book: {
-            message: `${book.title} is currently unavailable for borrowing`,
+            message: `${book.title} book is currently unavailable for borrowing`,
             name: "UnavailableError",
             properties: {
-              message: `${book.title} is currently unavailable for borrowing`,
+              message: `${book.title} book is currently unavailable for borrowing`,
               type: "BookAvailability",
             },
             kind: "AvailabilityError",

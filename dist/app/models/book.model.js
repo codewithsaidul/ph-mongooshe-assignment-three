@@ -62,7 +62,7 @@ bookSchema.pre('findOneAndUpdate', function (next) {
                 name: "ResourceNotFoundError",
                 errors: {
                     book: {
-                        message: `No book found with the ID '${bookId}'. Cann't Update the book`,
+                        message: `No book found with the ID '${bookId._id}'. Cann't Update the book`,
                         name: "ResourceNotFoundError",
                         properties: {
                             message: `Book not found`,

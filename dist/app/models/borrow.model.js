@@ -45,6 +45,7 @@ const borrowSchema = new mongoose_1.Schema({
 borrowSchema.method("updateAvailability", function (bookId, quantity) {
     return __awaiter(this, void 0, void 0, function* () {
         const book = yield book_model_1.default.findById(bookId);
+        // checking requested bokk exist or not
         if (!book) {
             throw new APIError_1.APiError(404, "Resource not found", {
                 name: "ResourceNotFoundError",
@@ -71,10 +72,10 @@ borrowSchema.method("updateAvailability", function (bookId, quantity) {
                 name: "UnavailableError",
                 errors: {
                     book: {
-                        message: `${book.title} is currently unavailable for borrowing`,
+                        message: `${book.title} book is currently unavailable for borrowing`,
                         name: "UnavailableError",
                         properties: {
-                            message: `${book.title} is currently unavailable for borrowing`,
+                            message: `${book.title} book is currently unavailable for borrowing`,
                             type: "BookAvailability",
                         },
                         kind: "AvailabilityError",
