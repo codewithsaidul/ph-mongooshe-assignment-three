@@ -7,15 +7,17 @@ export const globalErrorHandler = (
   res: Response,
   next: Function
 ) => {
-  if (err.code === 11000 && err.keyValue) {
+  if (err.code === 11000 && err.name === "MongoServerError" && err.keyValue) {
     const key = Object.keys(err.keyValue)[0];
     const value = err.keyValue[key];
+
+    console.log(err.name)
 
     const errors = {
       name: "ValidationError",
       errors: {
         [key]: {
-          message: `${key} '${value}' already exists.`,
+          message: `${key} '${value}' already exists. Please use a unique value.`,
           name: "ValidatorError",
           properties: {
             message: `${key} must be unique`,
@@ -28,7 +30,7 @@ export const globalErrorHandler = (
       },
     };
 
-    res.status(404).json({
+    res.status(400).json({
       message: "Validation Failed",
       success: false,
       error: errors,
@@ -36,7 +38,7 @@ export const globalErrorHandler = (
 
     return;
   } else if (err.name === "ValidationError") {
-    res.status(404).json({
+    res.status(400).json({
       message: "Validation failed",
       success: false,
       error: {

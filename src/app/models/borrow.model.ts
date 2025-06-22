@@ -42,17 +42,18 @@ borrowSchema.method(
 
     if (!book) {
       throw new APiError(404, "Resource not found", {
-        name: "NotFoundError",
+        name: "ResourceNotFoundError",
         errors: {
           book: {
-            message: "Book Not Found",
-            name: "custom error",
+            message: `No book found with the ID '${bookId}'. Cann't Borrow`,
+            name: "ResourceNotFoundError",
             properties: {
-              message: "Book Not Found",
-              type: "Book",
+              message: `Book not found`,
+              operation: "borrowBook",
+              location: "body",
             },
-            kind: "Book",
-            path: "BookId",
+            kind: "NotFound",
+            path: "_id",
             value: bookId,
           },
         },
@@ -62,18 +63,18 @@ borrowSchema.method(
     //   checking book available status
     if (!book?.available) {
       // throw new Error("This Book isn't available at this moment");
-      throw new APiError(404, "Book is currently unavailable", {
+      throw new APiError(400, "Book is currently unavailable", {
         name: "UnavailableError",
         errors: {
           book: {
-            message: "This Book isn't available at this moment",
-            name: "custom error",
+            message: `${book.title} is currently unavailable for borrowing`,
+            name: "UnavailableError",
             properties: {
-              message: "This Book isn't available at this moment",
-              type: "Book Availity",
+              message: `${book.title} is currently unavailable for borrowing`,
+              type: "BookAvailability",
             },
-            kind: "Book Availity",
-            path: "BookId",
+            kind: "AvailabilityError",
+            path: "_id",
             value: bookId,
           },
         },
@@ -83,18 +84,18 @@ borrowSchema.method(
     //   checking enough copies are available or not
     if (book?.copies === undefined || book?.copies < quantity) {
       // throw new Error("Not enough copies available");
-      throw new APiError(404, "Validation failed", {
+      throw new APiError(400, "Validation failed", {
         name: "BusinessLogicError",
         errors: {
           copies: {
-            message: "Not enough copies available",
-            name: "CustomError",
+            message: `Not enough copies of '${book.title}' book available to borrow`,
+            name: "BusinessLogicError",
             properties: {
-              message: "Not enough copies available",
-              type: "copies",
+              message: `Only ${book.copies} copies of '${book.title}' book are available`,
+              type: "InsufficientCopies",
             },
             kind: "BusinessLogic",
-            path: "BookId",
+            path: "copies",
             value: quantity,
           },
         },

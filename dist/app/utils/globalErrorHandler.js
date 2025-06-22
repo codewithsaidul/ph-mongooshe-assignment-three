@@ -3,14 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.globalErrorHandler = void 0;
 const APIError_1 = require("./APIError");
 const globalErrorHandler = (err, req, res, next) => {
-    if (err.code === 11000 && err.keyValue) {
+    if (err.code === 11000 && err.name === "MongoServerError" && err.keyValue) {
         const key = Object.keys(err.keyValue)[0];
         const value = err.keyValue[key];
+        console.log(err.name);
         const errors = {
             name: "ValidationError",
             errors: {
                 [key]: {
-                    message: `${key} '${value}' already exists.`,
+                    message: `${key} '${value}' already exists. Please use a unique value.`,
                     name: "ValidatorError",
                     properties: {
                         message: `${key} must be unique`,
@@ -22,7 +23,7 @@ const globalErrorHandler = (err, req, res, next) => {
                 },
             },
         };
-        res.status(404).json({
+        res.status(400).json({
             message: "Validation Failed",
             success: false,
             error: errors,
@@ -30,7 +31,7 @@ const globalErrorHandler = (err, req, res, next) => {
         return;
     }
     else if (err.name === "ValidationError") {
-        res.status(404).json({
+        res.status(400).json({
             message: "Validation failed",
             success: false,
             error: {

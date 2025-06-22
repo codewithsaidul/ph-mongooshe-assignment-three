@@ -117,25 +117,27 @@ this endpoint is used to create a new book. It accepts fields like `title`, `aut
 
 #### **get** `/api/books`:
 
-this endpoint retrieves all book. This route supports filtering by `genre` using the `filter` query parameter, sorting results by a field (e.g createdAt) using `sortBy`. Changing the sort direction using `sort`(asc or desc), and limiting the number of results using the `limit` parameter.
+This endpoint retrieves all book. This route supports filtering by `genre` using the `filter` query parameter, sorting results by a field (e.g createdAt) using `sortBy`. Changing the sort direction using `sort`(asc or desc), and limiting the number of results using the `limit` parameter.
 
 <br> </br>
 
 #### **get** `/api/books:bookId`:
 
-this endpoint fetchs a single book by its unique MongoDB ObjectID. It returns all details of the book including metadata like `createdAt` and `updatedAt`.
+This endpoint fetchs a single book by its unique MongoDB ObjectID. It returns all details of the book including metadata like `createdAt` and `updatedAt`.
 
 <br> </br>
 
 #### **put** `/api/books:bookId`:
 
-this endpoint updates an existing book. you can send partial update like (only changing the `copies`), and the correspending fields will be updated in the database.
+This endpoint updates an existing book record. You can send partial updates (e.g., only update the copies field), and only the specified fields will be modified in the database.
+
+Before performing the update, a **Mongoose pre middleware** checks if the book exists. If the book does not exist, the API responds with a `404 Resource Not Found` error along with a detailed message including the invalid or incorrect book ID.
 
 <br> </br>
 
 #### **delete** `/api/books:bookId`:
 
-this endpoint permently removes a book from the system based on its ID. It use a **Mongoose pre middleware** to verify the book's existence before deletion. If the book doesn't exist then api throws a `404 Resource Not Found`  error with a meaningfull error message including the invalid or wrong book id
+This endpoint permently removes a book from the system based on its ID. It use a **Mongoose pre middleware** to verify the book's existence before deletion. If the book doesn't exist then api throws a `404 Resource Not Found`  error with a meaningfull error message including the invalid or wrong book id
 
 <br> </br>
 
@@ -145,14 +147,14 @@ this endpoint permently removes a book from the system based on its ID. It use a
 
 #### **post** `/api/borrow`:
 
-this endpoint is used to borrow a book. Its accepts three fields in the requested body. The `book`: id of the book, `quantity`: number of `copies` to borrow, and the `dueDate`: return the deadline.
+This endpoint is used to borrow a book. Its accepts three fields in the requested body. The `book`: id of the book, `quantity`: number of `copies` to borrow, and the `dueDate`: return the deadline.
 Before processing the request, the system verifies whether enough copies are available. If the rquested quantity is avaiable, it deducts the quantity from the total copies, Additionally, if the remaining number of copies becomes zero, the system automatically sets the book's `available` status to `false`.
 
 <br> </br>
 
 #### **get** `/api/borrow`:
 
-this enpoints provides an aggregatted summary to all borrowed books. It uses MongoDB's aggregation pipeline to return the total quantity borrowed per book along with the book's title and isbn.
+This enpoints provides an aggregatted summary to all borrowed books. It uses MongoDB's aggregation pipeline to return the total quantity borrowed per book along with the book's title and isbn.
 
 <br> </br>
 

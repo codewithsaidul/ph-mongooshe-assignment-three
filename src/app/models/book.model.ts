@@ -30,10 +30,10 @@ const bookSchema = new Schema<IBook>(
     copies: {
       type: Number,
       required: [true, "Copies are required"],
-      min: [1, "Copies must be a positive number"],
+      min: [1, "Copies must be at least 1"],
       validate: {
         validator: Number.isInteger,
-        message: "Copies must be a number",
+        message: "Copies must be a whole number without decimals (e.g., 1, 2, 3)",
       },
     },
     available: {
@@ -47,23 +47,50 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
+
+bookSchema.pre('findOneAndUpdate', async function (next) {
+  const bookId = this.getFilter();
+  const key = Object.keys(bookId)[0];
+  const book = await this.clone().findOne();
+  if (!book) {
+    throw new APiError(404, "Resource not found", {
+      name: "ResourceNotFoundError",
+      errors: {
+        book: {
+          message: `No book found with the ID '${bookId}'. Cann't Update the book`,
+          name: "ResourceNotFoundError",
+          properties: {
+            message: `Book not found`,
+            operation: "updateBook",
+            location: "params"
+          },
+          kind: "NotFound",
+          path: key,
+          value: bookId._id
+        },
+      },
+    });
+  }
+  next();
+});
+
 bookSchema.pre("findOneAndDelete", async function (next) {
   const bookId = this.getFilter();
   const key = Object.keys(bookId)[0];
   const book = await this.clone().findOne();
   if (!book) {
     throw new APiError(404, "Resource not found", {
-      name: "NotFoundError",
+      name: "ResourceNotFoundError",
       errors: {
         book: {
-          message: "Book Not Found",
-          name: "custom error",
+          message: `No book found with the ID '${bookId}'. Cann't Delete the book`,
+          name: "ResourceNotFoundError",
           properties: {
             message: "Book Not Found",
-            type: "delete book",
+            operation: "deleteBook",
             location: "params"
           },
-          kind: "Book",
+          kind: "NotFound",
           path: key,
           value: bookId._id
         },

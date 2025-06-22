@@ -93,7 +93,7 @@ const updateBookById = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         const { bookId } = req.params;
         const bookBody = req.body;
-        const book = yield book_model_1.default.findByIdAndUpdate(bookId, bookBody);
+        const book = yield book_model_1.default.findOneAndUpdate({ _id: bookId }, bookBody);
         res.status(200).json({
             success: true,
             message: "Book updated successfully",
@@ -109,7 +109,7 @@ exports.updateBookById = updateBookById;
 const deleteBookById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { bookId } = req.params;
-        yield book_model_1.default.findByIdAndDelete(bookId);
+        yield book_model_1.default.findOneAndDelete({ _id: bookId });
         res.status(200).json({
             success: true,
             message: "Book deleted successfully",

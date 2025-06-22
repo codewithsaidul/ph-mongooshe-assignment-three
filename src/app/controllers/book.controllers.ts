@@ -100,7 +100,7 @@ res: Response,
     const { bookId } = req.params;
     const bookBody = req.body;
 
-    const book = await Book.findByIdAndUpdate(bookId, bookBody);
+    const book = await Book.findOneAndUpdate({ _id: bookId }, bookBody);
 
     res.status(200).json({
       success: true,
