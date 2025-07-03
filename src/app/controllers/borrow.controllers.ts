@@ -8,19 +8,17 @@ export const borrowBook = async (
   next: Function
 ) => {
   try {
-    const { bookId, quantity, dueDate } = req.body;
+    const { book, quantity, dueDate } = req.body;
 
-    const borrowBook = new Borrow({ book: bookId, quantity, dueDate });
-    await borrowBook.updateAvailability(bookId, quantity);
+    const borrowBook = new Borrow({ book, quantity, dueDate });
+    await borrowBook.updateAvailability(book, quantity);
     await borrowBook.save();
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Book borrowed successfully",
-        borrowBook,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Book borrowed successfully",
+      borrowBook,
+    });
   } catch (error: any) {
     next(error);
   }
@@ -39,6 +37,7 @@ export const getBorrowSummery = async (
         $group: {
           _id: "$book",
           totalQuantity: { $sum: "$quantity" },
+          latestBorrowTime: { $max: "$createdAt" }, 
         },
       },
 
@@ -58,23 +57,29 @@ export const getBorrowSummery = async (
       // stage 4
       {
         $project: {
-          _id: 0,
+          _id: 1,
           totalQuantity: 1,
+          latestBorrowTime: 1,
           book: {
             title: "$bookDetails.title",
             isbn: "$bookDetails.isbn",
           },
         },
       },
+
+      // stage 5: নতুন $sort স্টেজ যোগ করুন
+      {
+        $sort: {
+          latestBorrowTime: -1,
+        },
+      },
     ]);
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Borrowed books summary retrieved successfully",
-        data: summery,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Borrowed books summary retrieved successfully",
+      data: summery,
+    });
   } catch (error: any) {
     next(error);
   }

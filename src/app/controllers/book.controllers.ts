@@ -11,7 +11,7 @@ export const addBook = async (req: Request, res: Response, next: Function) => {
 
     res.status(200).json({
       success: true,
-      message: "Book created successfully",
+      message: "Book has been created successfully",
       data: book,
     });
   } catch (error: any) {
@@ -23,27 +23,37 @@ export const addBook = async (req: Request, res: Response, next: Function) => {
 export const getBooks = async (req: Request, res: Response, next: Function) => {
   try {
     const {
-      filter = "none",
+      page: pageQuery = 1,
       sortBy = "createdAt",
       sort = "desc",
-      limit = 10,
+      limit: limitQuery = 10,
     } = req.query;
 
+    const page = parseInt(pageQuery as string);
+    const limit = parseInt(limitQuery as string);
+
+    const skip = (page - 1) * limit;
     const query: Record<string, any> = {};
 
-    // filter by genre
-    if (filter !== "none") {
-      query.genre = filter;
-    }
+
+
+    const total = await Book.countDocuments()
 
     const books = await Book.find(query)
       .sort({ [sortBy as string]: sort === "asc" ? 1 : -1 })
-      .limit(parseInt(limit as string));
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json({
       success: true,
       message: "Books retrieved successfully",
       data: books,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      }
     });
   } catch (error: any) {
     next(error);
@@ -93,7 +103,7 @@ export const getSinlgeBook = async (
 // ================= update book by id
 export const updateBookById = async (
   req: Request,
-res: Response,
+  res: Response,
   next: Function
 ) => {
   try {
@@ -104,7 +114,7 @@ res: Response,
 
     res.status(200).json({
       success: true,
-      message: "Book updated successfully",
+      message: "Book has been updated successfully",
       data: book,
     });
   } catch (error: any) {
@@ -120,8 +130,7 @@ export const deleteBookById = async (
 ) => {
   try {
     const { bookId } = req.params;
-
-    await Book.findOneAndDelete({ _id: bookId});
+    await Book.findOneAndDelete({ _id: bookId });
 
     res.status(200).json({
       success: true,

@@ -6,6 +6,7 @@ const bookSchema = new Schema<IBook>(
   {
     title: { type: String, required: [true, "title is required"] },
     author: { type: String, required: [true, "author is required"] },
+    thumbnail: { type: String, required: [true, "thumbnail is required"] },
     genre: {
       type: String,
       uppercase: true,
@@ -33,7 +34,8 @@ const bookSchema = new Schema<IBook>(
       min: [1, "Copies must be at least 1"],
       validate: {
         validator: Number.isInteger,
-        message: "Copies must be a whole number without decimals (e.g., 1, 2, 3)",
+        message:
+          "Copies must be a whole number without decimals (e.g., 1, 2, 3)",
       },
     },
     available: {
@@ -47,8 +49,7 @@ const bookSchema = new Schema<IBook>(
   }
 );
 
-
-bookSchema.pre('findOneAndUpdate', async function (next) {
+bookSchema.pre("findOneAndUpdate", async function (next) {
   const bookId = this.getFilter();
   const key = Object.keys(bookId)[0];
   const book = await this.clone().findOne();
@@ -62,44 +63,37 @@ bookSchema.pre('findOneAndUpdate', async function (next) {
           properties: {
             message: `Book not found`,
             operation: "updateBook",
-            location: "params"
+            location: "params",
           },
           kind: "NotFound",
           path: key,
-          value: bookId._id
+          value: bookId._id,
         },
       },
     });
   }
-  next();
-});
 
-bookSchema.pre("findOneAndDelete", async function (next) {
-  const bookId = this.getFilter();
-  const key = Object.keys(bookId)[0];
-  const book = await this.clone().findOne();
-  if (!book) {
-    throw new APiError(404, "Resource not found", {
-      name: "ResourceNotFoundError",
-      errors: {
-        book: {
-          message: `No book found with the ID '${bookId._id}'. Cann't Delete the book`,
-          name: "ResourceNotFoundError",
-          properties: {
-            message: "Book Not Found",
-            operation: "deleteBook",
-            location: "params"
-          },
-          kind: "NotFound",
-          path: key,
-          value: bookId._id
-        },
-      },
-    });
+  // ========== update availity status using copies value
+  const bookUpdate: any = this.getUpdate();
+
+  if (!bookUpdate) {
+    return next();
   }
+
+
+   // ধাপ ২: সরাসরি প্রোপার্টি হিসেবে 'copies' আছে কিনা দেখুন
+  if (bookUpdate.copies !== undefined) {
+    if (bookUpdate.copies > 0) {
+      bookUpdate.available = true;
+    } else {
+      bookUpdate.available = false;
+    }
+  }
+
+
   next();
 });
 
 const Book = model("Book", bookSchema);
 
-export default Book;
+export default Book;  
