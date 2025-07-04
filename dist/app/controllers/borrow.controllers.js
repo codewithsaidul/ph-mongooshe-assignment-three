@@ -17,13 +17,11 @@ const borrow_model_1 = __importDefault(require("../models/borrow.model"));
 // ================= add new book
 const borrowBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { bookId, quantity, dueDate } = req.body;
-        const borrowBook = new borrow_model_1.default({ book: bookId, quantity, dueDate });
-        yield borrowBook.updateAvailability(bookId, quantity);
+        const { book, quantity, dueDate } = req.body;
+        const borrowBook = new borrow_model_1.default({ book, quantity, dueDate });
+        yield borrowBook.updateAvailability(book, quantity);
         yield borrowBook.save();
-        res
-            .status(200)
-            .json({
+        res.status(200).json({
             success: true,
             message: "Book borrowed successfully",
             borrowBook,
@@ -43,6 +41,7 @@ const getBorrowSummery = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                 $group: {
                     _id: "$book",
                     totalQuantity: { $sum: "$quantity" },
+                    latestBorrowTime: { $max: "$createdAt" },
                 },
             },
             // stage 2
@@ -59,18 +58,23 @@ const getBorrowSummery = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             // stage 4
             {
                 $project: {
-                    _id: 0,
+                    _id: 1,
                     totalQuantity: 1,
+                    latestBorrowTime: 1,
                     book: {
                         title: "$bookDetails.title",
                         isbn: "$bookDetails.isbn",
                     },
                 },
             },
+            // stage 5: নতুন $sort স্টেজ যোগ করুন
+            {
+                $sort: {
+                    latestBorrowTime: -1,
+                },
+            },
         ]);
-        res
-            .status(200)
-            .json({
+        res.status(200).json({
             success: true,
             message: "Borrowed books summary retrieved successfully",
             data: summery,

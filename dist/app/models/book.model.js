@@ -14,6 +14,7 @@ const APIError_1 = require("../utils/APIError");
 const bookSchema = new mongoose_1.Schema({
     title: { type: String, required: [true, "title is required"] },
     author: { type: String, required: [true, "author is required"] },
+    thumbnail: { type: String, required: [true, "thumbnail is required"] },
     genre: {
         type: String,
         uppercase: true,
@@ -52,7 +53,7 @@ const bookSchema = new mongoose_1.Schema({
     versionKey: false,
     timestamps: true,
 });
-bookSchema.pre('findOneAndUpdate', function (next) {
+bookSchema.pre("findOneAndUpdate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const bookId = this.getFilter();
         const key = Object.keys(bookId)[0];
@@ -67,41 +68,28 @@ bookSchema.pre('findOneAndUpdate', function (next) {
                         properties: {
                             message: `Book not found`,
                             operation: "updateBook",
-                            location: "params"
+                            location: "params",
                         },
                         kind: "NotFound",
                         path: key,
-                        value: bookId._id
+                        value: bookId._id,
                     },
                 },
             });
         }
-        next();
-    });
-});
-bookSchema.pre("findOneAndDelete", function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const bookId = this.getFilter();
-        const key = Object.keys(bookId)[0];
-        const book = yield this.clone().findOne();
-        if (!book) {
-            throw new APIError_1.APiError(404, "Resource not found", {
-                name: "ResourceNotFoundError",
-                errors: {
-                    book: {
-                        message: `No book found with the ID '${bookId._id}'. Cann't Delete the book`,
-                        name: "ResourceNotFoundError",
-                        properties: {
-                            message: "Book Not Found",
-                            operation: "deleteBook",
-                            location: "params"
-                        },
-                        kind: "NotFound",
-                        path: key,
-                        value: bookId._id
-                    },
-                },
-            });
+        // ========== update availity status using copies value
+        const bookUpdate = this.getUpdate();
+        if (!bookUpdate) {
+            return next();
+        }
+        // ধাপ ২: সরাসরি প্রোপার্টি হিসেবে 'copies' আছে কিনা দেখুন
+        if (bookUpdate.copies !== undefined) {
+            if (bookUpdate.copies > 0) {
+                bookUpdate.available = true;
+            }
+            else {
+                bookUpdate.available = false;
+            }
         }
         next();
     });

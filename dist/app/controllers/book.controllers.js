@@ -22,7 +22,7 @@ const addBook = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         const book = yield book_model_1.default.create(bookBody);
         res.status(200).json({
             success: true,
-            message: "Book created successfully",
+            message: "Book has been created successfully",
             data: book,
         });
     }
@@ -34,19 +34,26 @@ exports.addBook = addBook;
 // ================= get all books
 const getBooks = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { filter = "none", sortBy = "createdAt", sort = "desc", limit = 10, } = req.query;
+        const { page: pageQuery = 1, sortBy = "createdAt", sort = "desc", limit: limitQuery = 10, } = req.query;
+        const page = parseInt(pageQuery);
+        const limit = parseInt(limitQuery);
+        const skip = (page - 1) * limit;
         const query = {};
-        // filter by genre
-        if (filter !== "none") {
-            query.genre = filter;
-        }
+        const total = yield book_model_1.default.countDocuments();
         const books = yield book_model_1.default.find(query)
             .sort({ [sortBy]: sort === "asc" ? 1 : -1 })
-            .limit(parseInt(limit));
+            .skip(skip)
+            .limit(limit);
         res.status(200).json({
             success: true,
             message: "Books retrieved successfully",
             data: books,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            }
         });
     }
     catch (error) {
@@ -96,7 +103,7 @@ const updateBookById = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const book = yield book_model_1.default.findOneAndUpdate({ _id: bookId }, bookBody);
         res.status(200).json({
             success: true,
-            message: "Book updated successfully",
+            message: "Book has been updated successfully",
             data: book,
         });
     }

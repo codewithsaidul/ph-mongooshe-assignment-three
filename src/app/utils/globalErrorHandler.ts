@@ -3,15 +3,14 @@ import { APiError } from "./APIError";
 
 export const globalErrorHandler = (
   err: any,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: Function
+  _next: Function
 ) => {
   if (err.code === 11000 && err.name === "MongoServerError" && err.keyValue) {
     const key = Object.keys(err.keyValue)[0];
     const value = err.keyValue[key];
 
-    console.log(err.name)
 
     const errors = {
       name: "ValidationError",

@@ -2,11 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.globalErrorHandler = void 0;
 const APIError_1 = require("./APIError");
-const globalErrorHandler = (err, req, res, next) => {
+const globalErrorHandler = (err, _req, res, _next) => {
     if (err.code === 11000 && err.name === "MongoServerError" && err.keyValue) {
         const key = Object.keys(err.keyValue)[0];
         const value = err.keyValue[key];
-        console.log(err.name);
         const errors = {
             name: "ValidationError",
             errors: {
